@@ -113,14 +113,19 @@ a:hover {
     display: grid;
     grid-template-columns: 100%;
 }
-#buttonPanel>button {
+#buttonPanel button {
     margin-top: var(--vertical-space);
     margin-bottom: var(--vertical-space);
+    margin-left: var(--horizontal-space);
+    margin-right: var(--horizontal-space);
 }
 #buttIns {
     display: grid;
     grid-template-columns: auto auto;
     grid-template-rows: auto auto;
+}
+#skip {
+    grid-column-start: span 2;
 }
 
 
