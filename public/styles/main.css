@@ -119,6 +119,12 @@ a:hover {
     margin-left: var(--horizontal-space);
     margin-right: var(--horizontal-space);
 }
+#accept button {
+    margin-top: var(--vertical-space);
+    margin-bottom: var(--vertical-space);
+    margin-left: var(--horizontal-space);
+    margin-right: var(--horizontal-space);
+}
 #buttIns {
     display: grid;
     grid-template-columns: auto auto;
