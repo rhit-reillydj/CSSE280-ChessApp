@@ -8,6 +8,10 @@
   <link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Roboto:300,400,500,700&display=swap" />
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/mdb-ui-kit/6.4.2/mdb.min.css" />
   <link rel="stylesheet" href="https://www.gstatic.com/firebasejs/ui/6.1.0/firebase-ui-auth.css" />
+  <!-- include the style -->
+  <link rel="stylesheet" href="styles/css/alertify.min.css" />
+  <!-- include a theme -->
+  <link rel="stylesheet" href="styles/css/themes/default.min.css" />
   <link rel="stylesheet" href="styles/main.css">
   <title>Chess OpenWizard</title>
 </head>
@@ -19,7 +23,7 @@
       <i class="fas fa-star"></i>
     </button>
     <button id="profile" type="button" class="btn btn-primary btn-floating" onclick="nav()">
-      <i class="fas fa-user"></i>
+      <i class="fas fa-bars"></i>
     </button>
   </nav>
 
@@ -27,28 +31,26 @@
     <a href="/favorites.html">Favorites</a>
     <a href="#" id="signOut">Sign Out</a>
   </div>
-  
+
+
   <div id="detailPage" class="container page-container">
 
     <div id="detailContainer">
       <div class="detailCard">
         <img class="card-image" src="images/defaultBoard.png">
         <a class="card-link" src="chess.com">Chess.com</a>
-        <p class="card-about">Loading...</p>
+        <p class="card-about">Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Urna id volutpat lacus laoreet. Consectetur libero id faucibus nisl tincidunt eget nullam non nisi. At quis risus sed vulputate odio ut.</p>
         <ol>
-          <li>Aggression: 2</li>
+          <li>Aggression: 3</li>
           <li>Defense: 2</li>
-          <li>Flexibility: 2</li>
-          <li>Theory: 2</li>
+          <li>Flexibility: 5</li>
+          <li>Theory: 1</li>
           <li>Aggression: 2</li>
         </ol>
       </div>
     </div>
 
   </div>
-
-
-  
 
   </div>
   <script src="scripts/jquery.min.js"></script>
@@ -59,6 +61,7 @@
   <script src="/__/firebase/7.18.0/firebase-auth.js"></script>
   <script src="/__/firebase/7.18.0/firebase-firestore.js"></script>
   <script src="/__/firebase/init.js"></script>
+  <script src="scripts/alertify.min.js"></script>
   <script src="https://www.gstatic.com/firebasejs/ui/6.1.0/firebase-ui-auth.js"></script>
   <script src="scripts/main.js"></script>
 </body>

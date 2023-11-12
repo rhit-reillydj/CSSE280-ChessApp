@@ -10,13 +10,14 @@ rhit.quizIndex = 0;
 rhit.openingManager = null;
 rhit.db = null;
 rhit.opened = false;
+rhit.sortedOps = [];
 
 
 // !!CLASSES!!
 
 // Openings
 rhit.opening = class {
-	constructor(id, name, color, img, url, about, agg, def, fle, the, gam) {
+	constructor(id, name, color, img, url, about, agg, def, fle, the, gam, match) {
 		this.id = id;
 		this.name = name;
 		this.color = color;
@@ -28,7 +29,9 @@ rhit.opening = class {
 		this.fle = fle;
 		this.the = the;
 		this.gam = gam;
-		this.favorited = rhit.currentUser.isFavorited(this.id);
+		this.match = match;
+
+		this.favorited = rhit.currentUser.isFavorited(id);
 		console.log(this.favorited);
 	}
 }
@@ -64,6 +67,13 @@ rhit.OpeningsManager = class {
 			docSnapshot.get("fle"),
 			docSnapshot.get("the"),
 			docSnapshot.get("gam"),
+			rhit.currentUser.checkMatch(
+				docSnapshot.get("agg"),
+				docSnapshot.get("def"),
+				docSnapshot.get("fle"),
+				docSnapshot.get("the"),
+				docSnapshot.get("gam")
+			)
 		);
 		return op;
 	}
@@ -134,6 +144,21 @@ rhit.user = class {
 			this.fle = doc.get("fle");
 			this.the = doc.get("the");
 			this.gam = doc.get("gam");
+		});
+
+		this.docRef.collection("Favorites").doc("FavoriteList").onSnapshot((doc) => {
+			this.CaroKannDefense = doc.get("CaroKannDefense");
+			this.EnglishOpening = doc.get("EnglishOpening");
+			this.FrenchDefense = doc.get("FrenchDefense");
+			this.ItalianGame = doc.get("ItalianGame");
+			this.KingsGambit = doc.get("KingsGambit");
+			this.KingsIndian = doc.get("KingsIndian");
+			this.LondonSystem = doc.get("LondonSystem");
+			this.QueensGambit = doc.get("QueensGambit");
+			this.RuyLopez = doc.get("RuyLopez");
+			this.ScandinavianDefense = doc.get("ScandinavianDefense");
+			this.SicilianDefense = doc.get("SicilianDefense");
+			this.ViennaGame = doc.get("ViennaGame");
 		});
 	}
 
@@ -256,9 +281,48 @@ rhit.user = class {
 	}
 
 	isFavorited = function (id) {
-		this.docRef.collection("Favorites").doc("FavoriteList").onSnapshot((doc) => {
-			return doc.get(id);
-		});
+		switch (id) {
+			case "CaroKannDefense":
+				return this.CaroKannDefense;
+			case "EnglishOpening":
+				return this.EnglishOpening;
+			case "FrenchDefense":
+				return this.FrenchDefense;
+			case "ItalianGame":
+				return this.ItalianGame;
+			case "KingsGambit":
+				return this.KingsGambit;
+			case "KingsIndian":
+				return this.KingsIndian;
+			case "LondonSystem":
+				return this.LondonSystem;
+			case "QueensGambit":
+				return this.QueensGambit;
+			case "RuyLopez":
+				return this.RuyLopez;
+			case "ScandinavianDefense":
+				return this.ScandinavianDefense;
+			case "SicilianDefense":
+				return this.SicilianDefense;
+			case "ViennaGame":
+				return this.ViennaGame;
+			default:
+				console.log("Not valid opening: " + id);
+				break;
+		}
+	}
+
+	checkMatch = function (agg, def, fle, the, gam) {
+		let match = 20;
+
+		match = match - Math.abs(agg - this.agg);
+		match = match - Math.abs(def - this.def);
+		match = match - Math.abs(the - this.the);
+		match = match - Math.abs(fle - this.fle);
+		match = match - Math.abs(gam - this.gam);
+
+		console.log(match);
+		return match;
 	}
 }
 
@@ -310,7 +374,7 @@ rhit.FbAuthManager = class {
 rhit.LoginPageController = class {
 	constructor() {
 		console.log("Login Page");
-		rhit.startFirebaseUI();
+		
 	}
 }
 
@@ -355,15 +419,19 @@ rhit.OpeningsPageController = class {
 	}
 
 	_createCard(opening) {
+		const perc = (opening.match * 100) / 20;
 		return htmlToElement(
-						`<button id="openingsButton" class="${opening.color}">&#9813${opening.name}</button>`
+			`<button id="openingsButton" class="${opening.color}">&#9813${opening.name}   (${perc}% Match)</button>`
 		);
 	}
 
 	updateList() {
 		const newList = htmlToElement('<div id="openingsContainer"></div>');
-		for (let i = 0; i < rhit.openingManager.length; i++) {
-			const op = rhit.openingManager.getOpeningAtIndex(i);
+
+		const ops = rhit.sortOps();
+
+		for (let i = 0; i < ops.length; i++) {
+			const op = ops[i];
 			const newCard = this._createCard(op);
 
 			newCard.onclick = (event) => {
@@ -393,19 +461,13 @@ rhit.FavoritesPageController = class {
 
 	_createCard(opening) {
 		return htmlToElement(
-			`<div id="favoritesContainer" class=${opening.color}>
-				<div class="listCard">
-			  		<div class="card-body">
-						<a id="favoritesTitle" class="card-title">&#9813${opening.name}</a>
-			  		</div>
-				</div>
-		  	</div>`
+			`<button id="openingsButton" class="${opening.color}">&#9813${opening.name}</button>`
 		);
 	}
 
 	updateList() {
-		const newList = htmlToElement('<div id="openingListContainer"></div>');
-		const empty = true;
+		const newList = htmlToElement('<div id="openingsContainer"></div>');
+		let empty = true;
 		for (let i = 0; i < rhit.openingManager.length; i++) {
 			const op = rhit.openingManager.getOpeningAtIndex(i);
 			if (op.favorited) {
@@ -421,12 +483,12 @@ rhit.FavoritesPageController = class {
 			}
 		}
 
-		if(empty) {
+		if (empty) {
 			const newCard = htmlToElement(
 				'<h1>No Openings Have Been Favorited Yet!</h1>'
 			)
-				newList.appendChild(newCard);
-				console.log("Appended: " + newCard);
+			newList.appendChild(newCard);
+			console.log("Appended: " + newCard);
 		}
 
 		const oldList = document.querySelector("#favoritesContainer");
@@ -451,8 +513,9 @@ rhit.DetailPageController = class {
 		const queryString = window.location.search;
 		const urlParams = new URLSearchParams(queryString);
 		const openingNum = urlParams.get("num");
-		const op = rhit.openingManager.getOpeningAtIndex(openingNum);
-		const id = op.id;
+		const ops = rhit.sortOps();
+		console.log(ops);
+		const op = ops[openingNum];
 
 
 		const newItem = htmlToElement(
@@ -479,14 +542,22 @@ rhit.DetailPageController = class {
 
 		if (op.favorited) {
 			console.log("Favorited");
-			document.getElementById("#favorite").body.style.color = "#592411";
-			document.getElementById("#favorite").style.backgroundColor = "#A66B49";
+			document.getElementById("favorite").style.color = "#F2D9BB";
+			document.getElementById("favorite").style.backgroundColor = "#A66B49";
 		}
 
 		document.querySelector("#favorite").onclick = (event) => {
 			op.favorited = !op.favorited;
 			rhit.currentUser.updateFavorite(op.id, op.favorited);
-			console.log(op.favorited);
+			if (op.favorited) {
+				document.getElementById("favorite").style.color = "#F2D9BB";
+				document.getElementById("favorite").style.backgroundColor = "#A66B49";
+				alertify.success('Favorited!');
+			} else {
+				document.getElementById("favorite").style.color = "#A66B49";
+				document.getElementById("favorite").style.backgroundColor = "#F2D9BB";
+				alertify.error('Unfavorited...');
+			}
 		}
 	}
 }
@@ -536,19 +607,37 @@ rhit.incrementQuestion = function () {
 rhit.startFirebaseUI = function () {
 	// FirebaseUI config.
 	var uiConfig = {
-		signInSuccessUrl: '/quiz.html',
-		signInOptions: [
-			// firebase.auth.GoogleAuthProvider.PROVIDER_ID,
-			firebase.auth.EmailAuthProvider.PROVIDER_ID,
-			firebase.auth.PhoneAuthProvider.PROVIDER_ID,
-			firebaseui.auth.AnonymousAuthProvider.PROVIDER_ID
-		],
-	};
-	// Firebase login widget
-	const ui = new firebaseui.auth.AuthUI(firebase.auth());
-	ui.start('#firebaseui-auth-container', uiConfig);
+        signInSuccessUrl: 'quiz.html',
+        signInOptions: [
+          // Leave the lines as is for the providers you want to offer your users.
+          firebase.auth.GoogleAuthProvider.PROVIDER_ID,
+          firebase.auth.EmailAuthProvider.PROVIDER_ID,
+          firebase.auth.PhoneAuthProvider.PROVIDER_ID,
+          firebaseui.auth.AnonymousAuthProvider.PROVIDER_ID
+        ]
+      };
+      var ui = new firebaseui.auth.AuthUI(firebase.auth());
+      ui.start('#firebaseui-auth-container', uiConfig);
 }
 
+
+// Sort Openings
+rhit.sortOps = function () {
+	rhit.sortedOps = [];
+
+	for (let i = 0; i < rhit.openingManager.length; i++) {
+		const op = rhit.openingManager.getOpeningAtIndex(i);
+		rhit.sortedOps[i] = op;
+	}
+
+	console.log(rhit.sortedOps);
+
+	rhit.sortedOps.sort(function (a, b) {
+		return parseFloat(b.match) - parseFloat(a.match);
+	});
+
+	return rhit.sortedOps;
+}
 
 // Check for Redirects
 rhit.checkForRedirects = function () {
@@ -565,7 +654,8 @@ rhit.initializePage = function () {
 
 	if (document.querySelector("#loginPage")) {
 		new rhit.LoginPageController();
-	} else if (!document.querySelector("#quizPage")) {
+		rhit.startFirebaseUI();
+	} else {
 		document.querySelector("#signOut").addEventListener("click", (event) => {
 			rhit.fbAuthManager.signOut();
 		});
@@ -619,3 +709,55 @@ rhit.main = function () {
 };
 
 rhit.main();
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+window.alertComponent = function () {
+	return {
+		openAlertBox: false,
+		alertBackgroundColor: '',
+		alertMessage: '',
+		showAlert(type) {
+			this.openAlertBox = true
+			switch (type) {
+				case 'success':
+					this.alertBackgroundColor = 'bg-green-500'
+					this.alertMessage = `${this.successIcon} ${this.defaultSuccessMessage}`
+					break
+				case 'info':
+					this.alertBackgroundColor = 'bg-blue-500'
+					this.alertMessage = `${this.infoIcon} ${this.defaultInfoMessage}`
+					break
+				case 'warning':
+					this.alertBackgroundColor = 'bg-yellow-500'
+					this.alertMessage = `${this.warningIcon} ${this.defaultWarningMessage}`
+					break
+				case 'danger':
+					this.alertBackgroundColor = 'bg-red-500'
+					this.alertMessage = `${this.dangerIcon} ${this.defaultDangerMessage}`
+					break
+			}
+			this.openAlertBox = true
+		},
+		successIcon: `<svg fill="none" stroke-linecap="round" stroke-linejoin="round" stroke-width="2" viewBox="0 0 24 24" stroke="currentColor" class="w-5 h-5 mr-2 text-white"><path d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"></path></svg>`,
+		infoIcon: `<svg fill="none" stroke-linecap="round" stroke-linejoin="round" stroke-width="2" viewBox="0 0 24 24" stroke="currentColor" class="w-5 h-5 mr-2 text-white"><path d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"></path></svg>`,
+		warningIcon: `<svg fill="none" stroke-linecap="round" stroke-linejoin="round" stroke-width="2" viewBox="0 0 24 24" stroke="currentColor" class="w-5 h-5 mr-2 text-white"><path d="M12 8v4m0 4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"></path></svg>`,
+		dangerIcon: `<svg fill="none" stroke-linecap="round" stroke-linejoin="round" stroke-width="2" viewBox="0 0 24 24" stroke="currentColor" class="w-5 h-5 mr-2 text-white"><path d="M18.364 18.364A9 9 0 005.636 5.636m12.728 12.728A9 9 0 015.636 5.636m12.728 12.728L5.636 5.636"></path></svg>`,
+		defaultInfoMessage: `This alert contains info message.`,
+		defaultSuccessMessage: `This alert contains success message.`,
+		defaultWarningMessage: `This alert contains warning message.`,
+		defaultDangerMessage: `This alert contains danger message.`,
+	}
+}
