@@ -2,21 +2,28 @@
  * @author reillydj
  */
 
-var rhit = rhit || {};
+// Global Namespace
+var chess = chess || {};
 
-rhit.currentUser = null;
-rhit.fbAuthManager = null;
-rhit.quizIndex = 0;
-rhit.openingManager = null;
-rhit.db = null;
-rhit.opened = false;
-rhit.sortedOps = [];
+
+// Global Variables
+chess.currentUser = null;
+chess.fbAuthManager = null;
+chess.openingManager = null;
+
+chess.sortedOps = [];
+chess.db = null;
+
+chess.quizIndex = 0;
+chess.opened = false;
+
 
 
 // !!CLASSES!!
 
-// Openings
-rhit.opening = class {
+// Opening
+chess.opening = class {
+	// Constructor
 	constructor(id, name, color, img, url, about, agg, def, fle, the, gam, match) {
 		this.id = id;
 		this.name = name;
@@ -31,18 +38,23 @@ rhit.opening = class {
 		this.gam = gam;
 		this.match = match;
 
-		this.favorited = rhit.currentUser.isFavorited(id);
-		console.log(this.favorited);
+		this.favorited = chess.currentUser.isFavorited(id);
 	}
 }
 
+
 // Openings Manager
-rhit.OpeningsManager = class {
+chess.OpeningsManager = class {
+	// Constructor
 	constructor() {
 		this._openingsSnapshots = [];
-		this._ref = rhit.db.collection("Openings");
+		this._ref = chess.db.collection("Openings");
 	}
 
+
+	// Functions
+
+	// Retrieve all openings from firestore
 	beginListening(changeListener) {
 		this._unsubscribe = this._ref.limit(50).onSnapshot((querySnapshot) => {
 			this._openingsSnapshots = querySnapshot.docs;
@@ -53,9 +65,10 @@ rhit.OpeningsManager = class {
 		this._unsubscribe();
 	}
 
+	// Create an opening class for the opening at the given index
 	getOpeningAtIndex(index) {
 		const docSnapshot = this._openingsSnapshots[index];
-		const op = new rhit.opening(
+		const op = new chess.opening(
 			docSnapshot.id,
 			docSnapshot.get("name"),
 			docSnapshot.get("color"),
@@ -67,7 +80,7 @@ rhit.OpeningsManager = class {
 			docSnapshot.get("fle"),
 			docSnapshot.get("the"),
 			docSnapshot.get("gam"),
-			rhit.currentUser.checkMatch(
+			chess.currentUser.checkMatch(
 				docSnapshot.get("agg"),
 				docSnapshot.get("def"),
 				docSnapshot.get("fle"),
@@ -78,6 +91,8 @@ rhit.OpeningsManager = class {
 		return op;
 	}
 
+
+	// Getters
 	get length() {
 		return this._openingsSnapshots.length;
 	}
@@ -89,12 +104,13 @@ rhit.OpeningsManager = class {
 
 
 // Users
-rhit.user = class {
+chess.user = class {
+	// Constructor
 	constructor(user) {
 		// Finds user on firebase if they exist
 		this.firebaseUser = user;
 		this.id = user.uid;
-		var docRef = rhit.db.collection("Account").doc(this.id);
+		var docRef = chess.db.collection("Account").doc(this.id);
 
 		// Create new user profile if they do not exist
 
@@ -104,7 +120,7 @@ rhit.user = class {
 				console.log("User exists! Document data:", doc.data());
 			} else {
 				console.log("User is new... Creating new Firebase Document");
-				firebase.firestore().collection("Account").doc(this.id).set({
+				chess.db.collection("Account").doc(this.id).set({
 					Username: user.displayName,
 					About: "About",
 					url: "https://external-content.duckduckgo.com/iu/?u=https%3A%2F%2Fzultimate.com%2Fwp-content%2Fuploads%2F2019%2F12%2Fdefault-profile.png&f=1&nofb=1&ipt=00d6e127adf943c25dfec1ef87a95188dfa5ab15a1ae8ac93c18f8ad045b9d35&ipo=images",
@@ -114,7 +130,7 @@ rhit.user = class {
 					the: 0,
 					gam: 0,
 				});
-				firebase.firestore().collection("Account").doc(this.id).collection("Favorites").doc("FavoriteList").set({
+				chess.db.collection("Account").doc(this.id).collection("Favorites").doc("FavoriteList").set({
 					EnglishOpening: false,
 					CaroKannDefense: false,
 					FrenchDefense: false,
@@ -132,7 +148,7 @@ rhit.user = class {
 		}).catch((error) => {
 			console.log("Error getting document:", error);
 		});
-		this.docRef = rhit.db.collection("Account").doc(this.id);
+		this.docRef = chess.db.collection("Account").doc(this.id);
 
 		// Updates class based on firebase data
 		this.docRef.onSnapshot((doc) => {
@@ -161,6 +177,9 @@ rhit.user = class {
 			this.ViennaGame = doc.get("ViennaGame");
 		});
 	}
+
+
+	// Functions
 
 	// Signs user out
 	signOut = function () {
@@ -212,6 +231,7 @@ rhit.user = class {
 		}
 	}
 
+	// Change an opening to be favorited/unfavorited
 	updateFavorite = function (id, bool) {
 		switch (id) {
 			case "CaroKannDefense":
@@ -280,6 +300,7 @@ rhit.user = class {
 		}
 	}
 
+	// Checks if the given opening id is favorited
 	isFavorited = function (id) {
 		switch (id) {
 			case "CaroKannDefense":
@@ -312,6 +333,7 @@ rhit.user = class {
 		}
 	}
 
+	// Checks an openings match with the user
 	checkMatch = function (agg, def, fle, the, gam) {
 		let match = 20;
 
@@ -321,21 +343,22 @@ rhit.user = class {
 		match = match - Math.abs(fle - this.fle);
 		match = match - Math.abs(gam - this.gam);
 
-		console.log(match);
 		return match;
 	}
 }
 
 
 // Firebase Authentication Manager
-rhit.FbAuthManager = class {
+chess.FbAuthManager = class {
 
-	// Construct
+	// Constructor
 	constructor() {
 		this._user = null;
 		this.signed = false;
-		console.log("You made the Auth Manager");
 	}
+
+
+	// Functions
 
 	// Listen for sign in or sign out
 	beginListening(changeListener) {
@@ -346,17 +369,19 @@ rhit.FbAuthManager = class {
 			} else {
 				this.signed = false;
 			}
-			rhit.checkForRedirects();
+			chess.checkForRedirects();
 			changeListener();
 		});
 	}
 
 	// Sign Out
 	signOut() {
-		rhit.currentUser.signOut();
-		rhit.currentUser = null;
+		chess.currentUser.signOut();
+		chess.currentUser = null;
 	}
 
+
+	// Getters
 	get isSignedIn() {
 		return this.signed;
 	}
@@ -368,19 +393,20 @@ rhit.FbAuthManager = class {
 
 
 
-// !!PAGE CONTROLLERS!
+// !!PAGE CONTROLLERS!!
 
 // Login Page
-rhit.LoginPageController = class {
+chess.LoginPageController = class {
 	constructor() {
 		console.log("Login Page");
-		
+		chess.startFirebaseUI();
 	}
 }
 
 
 // Quiz Page
-rhit.QuizPageController = class {
+chess.QuizPageController = class {
+	// Construct
 	constructor() {
 		console.log("Quiz Page");
 
@@ -388,47 +414,49 @@ rhit.QuizPageController = class {
 		const buttons = document.querySelectorAll("#buttonPanel > *");
 		for (const button of buttons) {
 			button.onclick = (event) => {
-				if (rhit.quizIndex >= 1) {
+				if (chess.quizIndex >= 1) {
 					const buttonValue = parseInt(button.dataset.buttonValue);
-					rhit.currentUser.preferenceValueSetter(rhit.quizIndex, buttonValue);
-					rhit.incrementQuestion();
+					chess.currentUser.preferenceValueSetter(chess.quizIndex, buttonValue);
+					chess.incrementQuestion();
 				}
 			};
 		}
 
 		// Listeners for yes/no buttons
 		document.querySelector("#yes").onclick = (event) => {
-			rhit.quizIndex = 1;
+			chess.quizIndex = 1;
 			document.querySelector("#accept").remove();
 			document.querySelector("#question").innerHTML = "I like to play offensively:";
 		}
 
 		document.querySelector("#no").onclick = (event) => {
-			rhit.fbAuthManager.signOut();
+			chess.fbAuthManager.signOut();
 		}
 	}
 }
 
 
 // Openings Page
-rhit.OpeningsPageController = class {
+chess.OpeningsPageController = class {
+	// Construct
 	constructor() {
 		console.log("Openings Page");
-		rhit.openingManager = new rhit.OpeningsManager();
-		rhit.openingManager.beginListening(this.updateList.bind(this));
+		chess.openingManager = new chess.OpeningsManager();
+		chess.openingManager.beginListening(this.updateList.bind(this));
 	}
 
 	_createCard(opening) {
 		const perc = (opening.match * 100) / 20;
 		return htmlToElement(
-			`<button id="openingsButton" class="${opening.color}">&#9813${opening.name}   (${perc}% Match)</button>`
+			`<button id="openingsButton" class="${opening.color}">&#9813${opening.name} (${perc}% Match)</button>`
 		);
 	}
 
+	// Update page with all openings in order of match
 	updateList() {
 		const newList = htmlToElement('<div id="openingsContainer"></div>');
 
-		const ops = rhit.sortOps();
+		const ops = chess.sortOps();
 
 		for (let i = 0; i < ops.length; i++) {
 			const op = ops[i];
@@ -439,39 +467,43 @@ rhit.OpeningsPageController = class {
 			};
 
 			newList.appendChild(newCard);
-			console.log("Appended: " + newCard);
 		}
 
 		const oldList = document.querySelector("#openingsContainer");
 		oldList.removeAttribute("id");
 		oldList.hidden = true;
 		oldList.parentElement.appendChild(newList);
-		console.log("Updated");
 	}
 }
 
 
 // Favorites Page
-rhit.FavoritesPageController = class {
+chess.FavoritesPageController = class {
+	// Construct
 	constructor() {
 		console.log("Openings Page");
-		rhit.openingManager = new rhit.OpeningsManager();
-		rhit.openingManager.beginListening(this.updateList.bind(this));
+		chess.openingManager = new chess.OpeningsManager();
+		chess.openingManager.beginListening(this.updateList.bind(this));
 	}
 
 	_createCard(opening) {
+		const perc = (opening.match * 100) / 20;
 		return htmlToElement(
-			`<button id="openingsButton" class="${opening.color}">&#9813${opening.name}</button>`
+			`<button id="openingsButton" class="${opening.color}">&#9813${opening.name} (${perc}% Match)</button>`
 		);
 	}
 
+	// Updates page with all favorited openings
 	updateList() {
 		const newList = htmlToElement('<div id="openingsContainer"></div>');
 		let empty = true;
-		for (let i = 0; i < rhit.openingManager.length; i++) {
-			const op = rhit.openingManager.getOpeningAtIndex(i);
+		const ops = chess.sortOps();
+
+		for (let i = 0; i < ops.length; i++) {
+			const op = ops[i];
 			if (op.favorited) {
 				empty = false;
+
 				const newCard = this._createCard(op);
 
 				newCard.onclick = (event) => {
@@ -479,33 +511,32 @@ rhit.FavoritesPageController = class {
 				};
 
 				newList.appendChild(newCard);
-				console.log("Appended: " + newCard);
 			}
 		}
 
+		// If there are no favorites, let them know
 		if (empty) {
 			const newCard = htmlToElement(
 				'<h1>No Openings Have Been Favorited Yet!</h1>'
 			)
 			newList.appendChild(newCard);
-			console.log("Appended: " + newCard);
 		}
 
 		const oldList = document.querySelector("#favoritesContainer");
 		oldList.removeAttribute("id");
 		oldList.hidden = true;
 		oldList.parentElement.appendChild(newList);
-		console.log("Updated");
 	}
 }
 
 
 // Detail Page
-rhit.DetailPageController = class {
+chess.DetailPageController = class {
+	// Construct
 	constructor() {
 		console.log("Detail Page");
-		rhit.openingManager = new rhit.OpeningsManager();
-		rhit.openingManager.beginListening(this.updateList.bind(this));
+		chess.openingManager = new chess.OpeningsManager();
+		chess.openingManager.beginListening(this.updateList.bind(this));
 	}
 
 	// Update page to the opening num found in the url
@@ -513,8 +544,7 @@ rhit.DetailPageController = class {
 		const queryString = window.location.search;
 		const urlParams = new URLSearchParams(queryString);
 		const openingNum = urlParams.get("num");
-		const ops = rhit.sortOps();
-		console.log(ops);
+		const ops = chess.sortOps();
 		const op = ops[openingNum];
 
 
@@ -540,23 +570,27 @@ rhit.DetailPageController = class {
 		oldItem.parentElement.appendChild(newItem);
 		oldItem.remove();
 
+		// Change things if the opening is favorited
 		if (op.favorited) {
-			console.log("Favorited");
 			document.getElementById("favorite").style.color = "#F2D9BB";
 			document.getElementById("favorite").style.backgroundColor = "#A66B49";
+			document.getElementById("title").setAttribute("href", "favorites.html");
 		}
 
+		// Change things as opening is favorited/unfavorited
 		document.querySelector("#favorite").onclick = (event) => {
 			op.favorited = !op.favorited;
-			rhit.currentUser.updateFavorite(op.id, op.favorited);
+			chess.currentUser.updateFavorite(op.id, op.favorited);
 			if (op.favorited) {
 				document.getElementById("favorite").style.color = "#F2D9BB";
 				document.getElementById("favorite").style.backgroundColor = "#A66B49";
 				alertify.success('Favorited!');
+				document.getElementById("title").setAttribute("href", "favorites.html");
 			} else {
 				document.getElementById("favorite").style.color = "#A66B49";
 				document.getElementById("favorite").style.backgroundColor = "#F2D9BB";
 				alertify.error('Unfavorited...');
+				document.getElementById("title").setAttribute("href", "/openings.html");
 			}
 		}
 	}
@@ -574,190 +608,138 @@ function htmlToElement(html) {
 	return template.content.firstChild;
 }
 
-
 // Increment Question
-rhit.incrementQuestion = function () {
-	switch (rhit.quizIndex) {
+chess.incrementQuestion = function () {
+	switch (chess.quizIndex) {
 		case 1:
 			document.querySelector("#question").innerHTML = "I like to play defensively:";
-			rhit.quizIndex = rhit.quizIndex + 1;
+			chess.quizIndex = chess.quizIndex + 1;
 			break;
 		case 2:
 			document.querySelector("#question").innerHTML = "I like to play flexibly:";
-			rhit.quizIndex = rhit.quizIndex + 1;
+			chess.quizIndex = chess.quizIndex + 1;
 			break;
 		case 3:
 			document.querySelector("#question").innerHTML = "I like to play theory (mathematical best moves):";
-			rhit.quizIndex = rhit.quizIndex + 1;
+			chess.quizIndex = chess.quizIndex + 1;
 			break;
 		case 4:
 			document.querySelector("#question").innerHTML = "I like to play gambits (sacrificing material for development or traps):";
-			rhit.quizIndex = rhit.quizIndex + 1;
+			chess.quizIndex = chess.quizIndex + 1;
 			break;
 		case 5:
 			document.querySelector("#question").innerHTML = "I like to play offensively:";
 			window.location.href = "/openings.html";
-			rhit.quizIndex = 1;
+			chess.quizIndex = 1;
 			break;
 	}
 }
 
-
-// Start Firebase UI
-rhit.startFirebaseUI = function () {
-	// FirebaseUI config.
-	var uiConfig = {
-        signInSuccessUrl: 'quiz.html',
-        signInOptions: [
-          // Leave the lines as is for the providers you want to offer your users.
-          firebase.auth.GoogleAuthProvider.PROVIDER_ID,
-          firebase.auth.EmailAuthProvider.PROVIDER_ID,
-          firebase.auth.PhoneAuthProvider.PROVIDER_ID,
-          firebaseui.auth.AnonymousAuthProvider.PROVIDER_ID
-        ]
-      };
-      var ui = new firebaseui.auth.AuthUI(firebase.auth());
-      ui.start('#firebaseui-auth-container', uiConfig);
+/* Set the width of the side navigation to 250px */
+function nav() {
+	if (chess.opened) {
+		document.getElementById("mySidenav").style.width = "0px"
+		chess.opened = false;
+	} else {
+		document.getElementById("mySidenav").style.width = "250px"
+		chess.opened = true;
+	}
 }
+
 
 
 // Sort Openings
-rhit.sortOps = function () {
-	rhit.sortedOps = [];
+chess.sortOps = function () {
+	chess.sortedOps = [];
 
-	for (let i = 0; i < rhit.openingManager.length; i++) {
-		const op = rhit.openingManager.getOpeningAtIndex(i);
-		rhit.sortedOps[i] = op;
+	for (let i = 0; i < chess.openingManager.length; i++) {
+		const op = chess.openingManager.getOpeningAtIndex(i);
+		chess.sortedOps[i] = op;
 	}
 
-	console.log(rhit.sortedOps);
-
-	rhit.sortedOps.sort(function (a, b) {
+	chess.sortedOps.sort(function (a, b) {
 		return parseFloat(b.match) - parseFloat(a.match);
 	});
 
-	return rhit.sortedOps;
+	return chess.sortedOps;
 }
 
+
+// Start Firebase UI
+chess.startFirebaseUI = function () {
+	// FirebaseUI config.
+	var uiConfig = {
+		signInSuccessUrl: 'quiz.html',
+		signInOptions: [
+			// Leave the lines as is for the providers you want to offer your users.
+			firebase.auth.GoogleAuthProvider.PROVIDER_ID,
+			firebase.auth.EmailAuthProvider.PROVIDER_ID,
+			firebase.auth.PhoneAuthProvider.PROVIDER_ID,
+			firebaseui.auth.AnonymousAuthProvider.PROVIDER_ID
+		]
+	};
+	var ui = new firebaseui.auth.AuthUI(firebase.auth());
+	ui.start('#firebaseui-auth-container', uiConfig);
+}
+
+
 // Check for Redirects
-rhit.checkForRedirects = function () {
-	if (document.querySelector("#loginPage") && rhit.fbAuthManager.isSignedIn) {
+chess.checkForRedirects = function () {
+	if (document.querySelector("#loginPage") && chess.fbAuthManager.isSignedIn) {
 		window.location.href = "/quiz.html";
-	} else if (!document.querySelector("#loginPage") && !rhit.fbAuthManager.isSignedIn) {
+
+	} else if (!document.querySelector("#loginPage") && !chess.fbAuthManager.isSignedIn) {
 		window.location.href = "/index.html";
 	}
 };
 
 
 // Initialize Page
-rhit.initializePage = function () {
+chess.initializePage = function () {
 
 	if (document.querySelector("#loginPage")) {
-		new rhit.LoginPageController();
-		rhit.startFirebaseUI();
+		new chess.LoginPageController();
+
 	} else {
 		document.querySelector("#signOut").addEventListener("click", (event) => {
-			rhit.fbAuthManager.signOut();
+			chess.fbAuthManager.signOut();
 		});
 	}
 
 	if (document.querySelector("#quizPage")) {
-		new rhit.QuizPageController();
+		new chess.QuizPageController();
 	}
 
 	if (document.querySelector("#openingsPage")) {
-		new rhit.OpeningsPageController();
+		new chess.OpeningsPageController();
 	}
 
 	if (document.querySelector("#detailPage")) {
-		new rhit.DetailPageController();
+		new chess.DetailPageController();
 	}
 
 	if (document.querySelector("#favoritesPage")) {
-		new rhit.FavoritesPageController();
-	}
-}
-
-/* Set the width of the side navigation to 250px */
-function nav() {
-	if (rhit.opened) {
-		document.getElementById("mySidenav").style.width = "0px"
-		rhit.opened = false;
-	} else {
-		document.getElementById("mySidenav").style.width = "250px"
-		rhit.opened = true;
+		new chess.FavoritesPageController();
 	}
 }
 
 
 
 // MAIN
-rhit.main = function () {
+chess.main = function () {
 	console.log("Ready");
 
-	rhit.db = firebase.firestore();
-	rhit.fbAuthManager = new rhit.FbAuthManager();
-	rhit.fbAuthManager.beginListening(() => {
-		console.log("isSignedIn: ", rhit.fbAuthManager.isSignedIn);
+	chess.db = firebase.firestore();
+	chess.fbAuthManager = new chess.FbAuthManager();
+	chess.fbAuthManager.beginListening(() => {
+		console.log("isSignedIn: ", chess.fbAuthManager.isSignedIn);
 
 
-		if (rhit.fbAuthManager.isSignedIn) {
-			rhit.currentUser = new rhit.user(rhit.fbAuthManager._user);
+		if (chess.fbAuthManager.isSignedIn) {
+			chess.currentUser = new chess.user(chess.fbAuthManager._user);
 		}
-		rhit.initializePage();
+		chess.initializePage();
 	});
 };
 
-rhit.main();
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-window.alertComponent = function () {
-	return {
-		openAlertBox: false,
-		alertBackgroundColor: '',
-		alertMessage: '',
-		showAlert(type) {
-			this.openAlertBox = true
-			switch (type) {
-				case 'success':
-					this.alertBackgroundColor = 'bg-green-500'
-					this.alertMessage = `${this.successIcon} ${this.defaultSuccessMessage}`
-					break
-				case 'info':
-					this.alertBackgroundColor = 'bg-blue-500'
-					this.alertMessage = `${this.infoIcon} ${this.defaultInfoMessage}`
-					break
-				case 'warning':
-					this.alertBackgroundColor = 'bg-yellow-500'
-					this.alertMessage = `${this.warningIcon} ${this.defaultWarningMessage}`
-					break
-				case 'danger':
-					this.alertBackgroundColor = 'bg-red-500'
-					this.alertMessage = `${this.dangerIcon} ${this.defaultDangerMessage}`
-					break
-			}
-			this.openAlertBox = true
-		},
-		successIcon: `<svg fill="none" stroke-linecap="round" stroke-linejoin="round" stroke-width="2" viewBox="0 0 24 24" stroke="currentColor" class="w-5 h-5 mr-2 text-white"><path d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"></path></svg>`,
-		infoIcon: `<svg fill="none" stroke-linecap="round" stroke-linejoin="round" stroke-width="2" viewBox="0 0 24 24" stroke="currentColor" class="w-5 h-5 mr-2 text-white"><path d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"></path></svg>`,
-		warningIcon: `<svg fill="none" stroke-linecap="round" stroke-linejoin="round" stroke-width="2" viewBox="0 0 24 24" stroke="currentColor" class="w-5 h-5 mr-2 text-white"><path d="M12 8v4m0 4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"></path></svg>`,
-		dangerIcon: `<svg fill="none" stroke-linecap="round" stroke-linejoin="round" stroke-width="2" viewBox="0 0 24 24" stroke="currentColor" class="w-5 h-5 mr-2 text-white"><path d="M18.364 18.364A9 9 0 005.636 5.636m12.728 12.728A9 9 0 015.636 5.636m12.728 12.728L5.636 5.636"></path></svg>`,
-		defaultInfoMessage: `This alert contains info message.`,
-		defaultSuccessMessage: `This alert contains success message.`,
-		defaultWarningMessage: `This alert contains warning message.`,
-		defaultDangerMessage: `This alert contains danger message.`,
-	}
-}
+chess.main();

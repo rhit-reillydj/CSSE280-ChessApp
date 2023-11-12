@@ -13,6 +13,7 @@
 </head>
 
 <body>
+  <!-- Navbar -->
   <nav class="navbar navbar-dark fixed-top">
     <a id="title" class="navbar-brand" href="/">Chess OpenWizard</a>
     <button id="profile" type="button" class="btn btn-primary btn-floating" onclick="nav()">
@@ -20,10 +21,12 @@
     </button>
   </nav>
 
+  <!-- Side Nav -->
   <div id="mySidenav" class="sidenav">
     <a href="#" id="signOut">Sign Out</a>
   </div>
 
+  <!-- Quiz Panel -->
   <div id="quizPage" class="container page-container">
 
     <h1 id="question">Answer each question with:</h1>
@@ -35,13 +38,12 @@
       <button data-button-value="1" id="SD" type="button" class="btn btn-danger btn-rounded">Strongly Disagree</button>
     </div>
 
+    <!-- Acceptance Panel -->
     <div id="accept">
       <h3>Do you understand?</h3>
       <button id="yes" type="button" class="btn btn-success">Yes</button>
       <button id="no" type="button" class="btn btn-danger">No</button>
     </div>
-
-    <div id="firebaseui-auth-container"></div>
 
   </div>
   <script src="scripts/jquery.min.js"></script>

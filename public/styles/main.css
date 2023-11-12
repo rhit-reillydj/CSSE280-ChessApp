@@ -12,6 +12,8 @@
     --contrast-color: #AAB7BF;
 }
 
+
+
 /* SITE WIDE */
 
 /* Center everything and apply font*/
@@ -37,23 +39,21 @@ body {
     color: var(--body-color);
 }
 
+/* Links */
 a {
     color: var(--contrast-color);
 }
-
 a:hover {
     color: var(--heading-color);
 }
 
-/* Set navbar colors */
+/* Navbar */
 .navbar {
     background-color: var(--body-color);
     display: grid;
     grid-template-rows: auto;
     grid-template-columns: 50% 50%;
 }
-
-/* Space and color navbar items correctly */
 .navbar>* {
     color: var(--light-color);
     background-color: var(--body-color);
@@ -61,31 +61,24 @@ a:hover {
     margin-right: var(--horizontal-space);
     width: auto;
 }
+.page-container {
+    margin-top: 75px;
+}
+
 
 /* The side navigation menu */
 .sidenav {
     height: 100%;
-    /* 100% Full-height */
     width: 0;
-    /* 0 width - change this with JavaScript */
     position: fixed;
-    /* Stay in place */
     z-index: 1;
-    /* Stay on top */
     top: 0;
-    /* Stay at the top */
     right: 0;
     background-color: var(--body-color);
-    /* Black*/
     overflow-x: hidden;
-    /* Disable horizontal scroll */
     padding-top: 60px;
-    /* Place content 60px from the top */
     transition: 0.5s;
-    /* 0.5 second transition effect to slide in the sidenav */
 }
-
-/* The navigation menu links */
 .sidenav a {
     padding: 8px 8px 8px 32px;
     text-decoration: none;
@@ -94,19 +87,13 @@ a:hover {
     display: block;
     transition: 0.3s;
 }
-
-/* When you mouse over the navigation links, change their color */
 .sidenav a:hover {
     color: #f1f1f1;
 }
-
-/* Style page content - use this if you want to push the page content to the right when you open the side navigation */
 #main {
     transition: margin-left .5s;
     padding: 20px;
 }
-
-/* On smaller screens, where height is less than 450px, change the style of the sidenav (less padding and a smaller font size) */
 @media screen and (max-height: 450px) {
     .sidenav {
         padding-top: 15px;
@@ -117,29 +104,25 @@ a:hover {
     }
 }
 
-/* Give some space under navbar */
-.page-container {
-    margin-top: 75px;
-}
 
 
 /* QUIZ PAGE */
 
-/* Make all buttons be in one columns */
+/* Buttons Layout */
 #buttonPanel {
     display: grid;
     grid-template-columns: 100%;
 }
-
-/* Space buttons */
 #buttonPanel>button {
     margin-top: var(--vertical-space);
     margin-bottom: var(--vertical-space);
 }
 
 
+
 /* LIST PAGE */
 
+/* Openings Container */
 #openingsContainer {
     display: grid;
     grid-template-columns: auto;
@@ -154,21 +137,20 @@ a:hover {
     font-size: 2rem;
     font-weight: 600;
 }
-
-/* Color Black Openings */
 .black {
     background-color: var(--body-color);
     color: var(--light-color);
 }
-
-/* Color White Openings */
 .white {
     background-color: var(--light-color);
     color: var(--body-color);
 }
 
+
+
 /* DETAIL PAGE */
 
+/* Unique Nav with favorite button */
 #detailNav {
     background-color: var(--body-color);
     display: grid;
@@ -176,68 +158,60 @@ a:hover {
     grid-template-columns: 33% 33% 33%;
     justify-items: center;
 }
-
 .navbar>* {
     width: 2.5rem;
     height: 2.5rem;
 }
-
 .navbar>#profile {
     justify-self: right;
     margin-right: 2.5rem;
 }
-
 .navbar>#title {
     justify-self: left;
     margin-left: 1rem;
 }
-
-/* Put everything in one column */
-.detailCard {
-    display: grid;
-    grid-template-columns: auto;
-    grid-template-rows: auto auto auto auto;
-}
-
-/* Space everything nicely */
-.detailCard>* {
-    margin: auto;
-    margin-bottom: 2rem;
-}
-
-.card-title {
-    margin-bottom: 1rem;
-}
-
-.card-image {
-    height: 20rem;
-}
-
-.card-about {
-    text-align: justify;
-    padding-left: var(--horizontal-space);
-    padding-right: var(--horizontal-space);
-}
-
-.card-list {
-    margin-bottom: 2rem;
-}
-
-.card-list>li {
-    text-align: left;
-}
-
-/* Favorite Button Colors */
-#favorite,
-#profile {
+#favorite, #profile {
     background-color: var(--light-color);
     color: var(--heading-color);
 }
 
 
+/* Detail Card */
+.detailCard {
+    display: grid;
+    grid-template-columns: auto;
+    grid-template-rows: auto auto auto auto;
+}
+.detailCard>* {
+    margin: auto;
+    margin-bottom: 2rem;
+}
+.card-title {
+    margin-bottom: 1rem;
+}
+.card-image {
+    height: 20rem;
+}
+.card-about {
+    text-align: justify;
+    padding-left: var(--horizontal-space);
+    padding-right: var(--horizontal-space);
+}
+.card-list {
+    margin-bottom: 2rem;
+}
+.card-list>li {
+    text-align: left;
+}
+
+
+
+/* SCREEN SIZE BREAKPOINTS */
+
+/* Smallest Screen Sizes */
 @media (max-width: 600px) {
     #detailNav {
-        grid-template-columns: 75% 15% 10%;
+        grid-template-columns: 65% 25% 10%;
     }
 
     #detailNav>#favorite,
@@ -246,7 +220,7 @@ a:hover {
     }
 }
 
-
+/* Medium Screen Size */
 @media (min-width: 767px) {
     .detailCard {
         grid-template-columns: auto auto;
@@ -281,6 +255,7 @@ a:hover {
     }
 }
 
+/* Largest Screen Size */
 @media (min-width: 990px) {
     body>* {
         padding-left: var(--horizontal-space);
