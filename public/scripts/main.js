@@ -574,7 +574,6 @@ chess.DetailPageController = class {
 		if (op.favorited) {
 			document.getElementById("favorite").style.color = "#F2D9BB";
 			document.getElementById("favorite").style.backgroundColor = "#A66B49";
-			document.getElementById("title").setAttribute("href", "favorites.html");
 		}
 
 		// Change things as opening is favorited/unfavorited
@@ -585,12 +584,10 @@ chess.DetailPageController = class {
 				document.getElementById("favorite").style.color = "#F2D9BB";
 				document.getElementById("favorite").style.backgroundColor = "#A66B49";
 				alertify.success('Favorited!');
-				document.getElementById("title").setAttribute("href", "favorites.html");
 			} else {
 				document.getElementById("favorite").style.color = "#A66B49";
 				document.getElementById("favorite").style.backgroundColor = "#F2D9BB";
 				alertify.error('Unfavorited...');
-				document.getElementById("title").setAttribute("href", "/openings.html");
 			}
 		}
 	}
