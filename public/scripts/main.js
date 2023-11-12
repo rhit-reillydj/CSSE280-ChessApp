@@ -123,7 +123,6 @@ chess.user = class {
 				chess.db.collection("Account").doc(this.id).set({
 					Username: user.displayName,
 					About: "About",
-					url: "https://external-content.duckduckgo.com/iu/?u=https%3A%2F%2Fzultimate.com%2Fwp-content%2Fuploads%2F2019%2F12%2Fdefault-profile.png&f=1&nofb=1&ipt=00d6e127adf943c25dfec1ef87a95188dfa5ab15a1ae8ac93c18f8ad045b9d35&ipo=images",
 					agg: 0,
 					def: 0,
 					fle: 0,
@@ -154,7 +153,6 @@ chess.user = class {
 		this.docRef.onSnapshot((doc) => {
 			this.Username = doc.get("Username");
 			this.about = doc.get("About");
-			this.url = doc.get("url");
 			this.agg = doc.get("agg");
 			this.def = doc.get("def");
 			this.fle = doc.get("fle");
@@ -432,6 +430,10 @@ chess.QuizPageController = class {
 		document.querySelector("#no").onclick = (event) => {
 			chess.fbAuthManager.signOut();
 		}
+
+		document.querySelector("#skip").onclick = (event) => {
+			window.location.href = "/openings.html";
+		}
 	}
 }
 
@@ -683,7 +685,7 @@ chess.startFirebaseUI = function () {
 // Check for Redirects
 chess.checkForRedirects = function () {
 	if (document.querySelector("#loginPage") && chess.fbAuthManager.isSignedIn) {
-		window.location.href = "/favorites.html";
+		window.location.href = "/quiz.html";
 
 	} else if (!document.querySelector("#loginPage") && !chess.fbAuthManager.isSignedIn) {
 		window.location.href = "/index.html";
