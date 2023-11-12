@@ -686,7 +686,7 @@ chess.startFirebaseUI = function () {
 // Check for Redirects
 chess.checkForRedirects = function () {
 	if (document.querySelector("#loginPage") && chess.fbAuthManager.isSignedIn) {
-		window.location.href = "/quiz.html";
+		window.location.href = "/favorites.html";
 
 	} else if (!document.querySelector("#loginPage") && !chess.fbAuthManager.isSignedIn) {
 		window.location.href = "/index.html";
