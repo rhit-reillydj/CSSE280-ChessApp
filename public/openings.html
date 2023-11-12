@@ -12,20 +12,22 @@
   <title>Chess Openings</title>
 </head>
 
-<body>
+<body id="openingsBody">
   <nav class="navbar navbar-dark fixed-top">
-    <a id="title" class="navbar-brand" href="/">Chess OpenWizard</a>
-    <button id="signOut">Sign Out</button>
+    <a id="title" class="navbar-brand" href="/openings.html">Chess OpenWizard</a>
+    <button id="profile" type="button" class="btn btn-primary btn-floating" onclick="nav()">
+      <i class="fas fa-user"></i>
+    </button>
   </nav>
 
+  <div id="mySidenav" class="sidenav">
+    <a href="/favorites.html">Favorites</a>
+    <a href="#" id="signOut">Sign Out</a>
+  </div>
   <div id="openingsPage" class="container page-container">
 
     <div id="openingsContainer">
-      <div class="listCard">
-        <div class="card-body">
-          <a class="card-title">&#9813 Loading...</a>
-        </div>
-      </div>
+      <button id="openingButton" class="${opening.color}">&#9813${opening.name}</button>
     </div>
 
   </div>

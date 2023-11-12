@@ -9,19 +9,32 @@
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/mdb-ui-kit/6.4.2/mdb.min.css" />
   <link rel="stylesheet" href="https://www.gstatic.com/firebasejs/ui/6.1.0/firebase-ui-auth.css" />
   <link rel="stylesheet" href="styles/main.css">
-  <title>OpenWizard Profile</title>
+  <title>Chess Openings</title>
 </head>
 
-<body>
+<body id="favoritesBody">
   <nav class="navbar navbar-dark fixed-top">
-    <a id="title" class="navbar-brand" href="/">Chess OpenWizard</a>
-    <button id="signOut">Sign Out</button>
+    <a id="title" class="navbar-brand" href="/openings.html">Chess OpenWizard</a>
+    <button id="profile" type="button" class="btn btn-primary btn-floating" onclick="nav()">
+      <i class="fas fa-user"></i>
+    </button>
   </nav>
-  <div id="profilePage" class="container page-container">
 
-  <h1>Profile</h1>
+  <div id="mySidenav" class="sidenav">
+    <a href="#">Favorites</a>
+    <a href="#" id="signOut">Sign Out</a>
+  </div>
+  <div id="favoritesPage" class="container page-container">
 
-  <div id="firebaseui-auth-container"></div>
+    <div id="favoritesContainer">
+      <div class="listCard">
+        <div class="card-body">
+          <a id="favoritesTitle" class="card-title">&#9813 Loading...</a>
+        </div>
+      </div>
+    </div>
+
+  </div>
 
   </div>
   <script src="scripts/jquery.min.js"></script>

@@ -13,14 +13,21 @@
 </head>
 
 <body>
-  <nav class="navbar navbar-dark fixed-top">
-    <a id="title" class="navbar-brand" href="/">Chess OpenWizard</a>
+  <nav class="navbar navbar-dark fixed-top" id="detailNav">
+    <a id="title" class="navbar-brand" href="/openings.html">Chess OpenWizard</a>
     <button id="favorite" type="button" class="btn btn-outline btn-floating" data-mdb-ripple-color="dark">
       <i class="fas fa-star"></i>
     </button>
-    <button id="signOut">Sign Out</button>
+    <button id="profile" type="button" class="btn btn-primary btn-floating" onclick="nav()">
+      <i class="fas fa-user"></i>
+    </button>
   </nav>
 
+  <div id="mySidenav" class="sidenav">
+    <a href="/favorites.html">Favorites</a>
+    <a href="#" id="signOut">Sign Out</a>
+  </div>
+  
   <div id="detailPage" class="container page-container">
 
     <div id="detailContainer">
@@ -28,10 +35,20 @@
         <img class="card-image" src="images/defaultBoard.png">
         <a class="card-link" src="chess.com">Chess.com</a>
         <p class="card-about">Loading...</p>
+        <ol>
+          <li>Aggression: 2</li>
+          <li>Defense: 2</li>
+          <li>Flexibility: 2</li>
+          <li>Theory: 2</li>
+          <li>Aggression: 2</li>
+        </ol>
       </div>
     </div>
 
   </div>
+
+
+  
 
   </div>
   <script src="scripts/jquery.min.js"></script>
